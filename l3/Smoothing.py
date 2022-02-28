@@ -175,6 +175,10 @@ Task 1.1 Filtering out salt & pepper noise
 '''
 Taks 1.2 Filtering colour images
 '''
+
+'''
+way 1 failed
+'''
 # img = io.imread('LondonEye.jpg')
 # print('Img1 data type =', img.dtype, ', with max channel value =', np.max(img))
 #
@@ -205,59 +209,70 @@ Taks 1.2 Filtering colour images
 # fig.tight_layout()
 # plt.show();
 
+##############################################################################
+#                             END OF YOUR CODE                               #
+##############################################################################
+'''
+way 2 solution
+'''
+img = io.imread('LondonEye.jpg')
+
+##############################################################################
+# TODO: Add noise to the RGB image, then implement median filter
+##############################################################################
+img_noisy2 = util.random_noise(img, mode='s&p')
+
+print('Img2 data type =', img_noisy2.dtype, ', with max channel value =', np.max(img_noisy2))
+
+r_ch = img_noisy2[:, :, 0]
+g_ch = img_noisy2[:, :, 1]
+b_ch = img_noisy2[:, :, 2]
+
+# median filter init
+r_ch_median = filters.median(r_ch, selem=square(3))
+g_ch_median = filters.median(g_ch, selem=square(3))
+b_ch_median = filters.median(b_ch, selem=square(3))
+
+img_median_filt = np.dstack((r_ch_median, g_ch_median, b_ch_median))
+# img_filtered_medi = img_as_float(filters.median(img_as_ubyte(img_noisy2)),disk(5))
+# print('Img3 data type =', img_filtered_medi.dtype, ', with max channel value =', np.max(img_filtered_medi))
+
+fig, ax = plt.subplots(1, 2, figsize=(8, 4))
+ax[0].imshow(img_noisy2)
+ax[0].set_title('Noisy'), ax[0].set_axis_off()
+ax[1].imshow(img_median_filt)
+ax[1].set_title('Median filter'), ax[1].set_axis_off()
+fig.tight_layout()
+plt.show();
 
 ##############################################################################
 #                             END OF YOUR CODE                               #
 ##############################################################################
+
 
 '''
 Task 1.3 (Optional): Filtering specific areas of an image
 
 I will use gaussian filteting and set a high sigma
 '''
-# face1 = (107,270)(240,388)
-# face2 = (480,180)(575,295)
-# face3 = (809,150)(893,242)
 img = io.imread('Class.jpg')
-# print('Img data type =', img.dtype, ', with max channel value =', np.max(img))
-# Img data type = uint8 , with max channel value = 255
-
-a = np.array([1, 2, 3])
-
-# i_coords = 107:240
-# j_coords = 270:388
-# face1 =np.array([i_coords, j_coords])
-
- # np.array(range(107,240),[270:388])
-# face2 = np.array([480:575,180:295])
-# face3 = np.array([809:893,150:242])
-
-se_square = square(5)
-print("Square (5) = ", "\n", se_square)
 
 ##############################################################################
 # TODO: Blur the faces in the image and show results
 ##############################################################################
+img_blurred = img_as_ubyte(filters.gaussian(img, sigma=10, multichannel=True))
+face_coords = np.array([[270, 388, 107, 240],
+                        [180, 295, 480, 575],
+                        [150, 242, 809, 893]])
+img_composite = img.copy()
 
-blurred_faces = filters.gaussian(img,sigma=5,multichannel=True)
+for i in range(face_coords.shape[0]):
+    img_composite[face_coords[i, 0]:face_coords[i, 1], face_coords[i, 2]:face_coords[i, 3], :] = \
+        img_blurred[face_coords[i, 0]:face_coords[i, 1], face_coords[i, 2]:face_coords[i, 3], :]
 
-
-# way2
-# extract image of faces (slicing)
-# img[y1:y2,x1:x2,:]
-# # filter then replace into image
-# img[y1:y2,x1:x2,:] = filtered version
-
-
-
-fig, ax = plt.subplots(1, 2, figsize=(8, 4))
-ax[0].imshow(img, cmap='gray')
-ax[0].set_title('original'), ax[0].set_axis_off()
-ax[1].imshow(blurred_faces, cmap='gray')
-ax[1].set_title('blurred faces'), ax[1].set_axis_off()
-fig.tight_layout()
-plt.show();
-
+plt.figure(figsize=(12, 9))
+plt.imshow(img_composite)
+plt.show()
 
 ##############################################################################
 #                             END OF YOUR CODE                               #

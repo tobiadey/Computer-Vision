@@ -27,7 +27,7 @@ ax[0].set_title('Original'), ax[0].set_axis_off()
 ax[1].imshow(img_x, cmap='gray')
 ax[1].set_title('X Derivative'), ax[1].set_axis_off()
 fig.tight_layout()
-plt.show()
+plt.show();
 
 kernel_y = kernel_x.T
 print("Kernel = ", "\n", kernel_y)
@@ -40,7 +40,7 @@ ax[0].set_title('Original'), ax[0].set_axis_off()
 ax[1].imshow(img_y, cmap='gray')
 ax[1].set_title('Y Derivative'), ax[1].set_axis_off()
 fig.tight_layout()
-plt.show()
+plt.show();
 
 # Notice the difference between the two image derivatives.
 # In a similar fashion, we could implement other types of first derivative kernels.
@@ -60,7 +60,7 @@ ax[0].set_title('X Derivative (Sobel)'), ax[0].set_axis_off()
 ax[1].imshow(img_sobel_y, cmap='gray')
 ax[1].set_title('Y Derivative (Sobel)'), ax[1].set_axis_off()
 fig.tight_layout()
-plt.show()
+plt.show();
 
 
 '''
@@ -76,17 +76,18 @@ you can use the sobel function in skimage.
 ##############################################################################
 # TODO: Compute gradient magnitude and compare to Sobel one
 ##############################################################################
-# im = img.copy()
 
-edges1 = filters.sobel(img)
-edges2 = filters.sobel(img)
+
+img_gradient_mag = np.sqrt(img_x**2 + img_y**2)
+img_sobel_gradient_mag = filters.sobel(img)
+
 fig, ax = plt.subplots(1, 2, figsize=(10, 10))
-ax[0].imshow(edges, cmap='gray')
+ax[0].imshow(img_gradient_mag, cmap='gray')
 ax[0].set_title('gradient magnitude'), ax[0].set_axis_off()
-ax[1].imshow(edges, cmap='gray')
+ax[1].imshow(img_sobel_gradient_mag, cmap='gray')
 ax[1].set_title('gradient magnitude (Sobel)'), ax[1].set_axis_off()
 fig.tight_layout()
-plt.show()
+plt.show();
 
 ##############################################################################
 #                             END OF YOUR CODE                               #
@@ -101,4 +102,4 @@ ax[0].set_title('Original'), ax[0].set_axis_off()
 ax[1].imshow(img_laplacian, cmap='gray')
 ax[1].set_title('Image Laplacian'), ax[1].set_axis_off()
 fig.tight_layout()
-plt.show()
+plt.show();
