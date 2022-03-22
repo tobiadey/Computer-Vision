@@ -25,7 +25,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-cap = cv2.VideoCapture('GregPen.avi')
+
+cap = cv2.VideoCapture('/Users/tobiadewunmi/Desktop/compVis/l5/GregPen.avi')
 frameCount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 frameWidth = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 frameHeight = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -70,7 +71,7 @@ def frame(i):
     return plot
 
 anim = animation.FuncAnimation(fig, frame, frames=100)
-# plt.show()
+plt.show()
 plt.close()
 # anim
 
@@ -91,7 +92,7 @@ def frame(i):
     return plot
 
 anim = animation.FuncAnimation(fig, frame, frames=100)
-# plt.show()
+plt.show()
 plt.close()
 # anim
 
@@ -116,92 +117,38 @@ Store the marker coordinates in the provided marker_coord array.
 (Tip: to detect the marker, it's advisable to select the region with highest area).
 '''
 
-# video shape = (300, 480, 640, 3)
-# video[9, :, :, :]  video shape
-
 marker_coord = np.zeros((frameCount, 2))
+
 
 ##############################################################################
 # TODO: Track the pink marker                                                #
 ##############################################################################
 
-from skimage import measure, color
+for i in range(frameCount):
+    img_seg = (video[i, :, :, 0] > 190) \
+              & (video[i, :, :, 1] > 40) & (video[i, :, :, 1] < 120) \
+              & (video[i, :, :, 2] > 120) & (video[i, :, :, 2] < 210)
 
-# segmentation based on colour channels
-# do frame by frame for loop
-fc = 0
-
-while fc < frameCount: 
-
-  # extract cord in for loop for the centroid
-  seg_mask = ((video[fc, :, :, 0] > 190) 
-            & (video[fc, :, :, 1] > 40)
-            & (video[fc, :, :, 1] < 120)
-            & (video[fc, :, :, 2] > 120)
-            & (video[fc, :, :, 2] < 210))
-  print('video shape =', video.shape)
-  print('marker coordinates =', marker_coord.shape)
-  print('segmask shape =', seg_mask.shape)
-
-  # print(seg_mask)
-  # get the x and y value for each frame
-  x = video[fc,:,:,:]
-  y = video[fc,:,:,:]
- 
-
-  # change marker cordinated to the x and y value from above
-  # marker_coord[:,0] = x #x channel
-  # marker_coord[:,1] = y #y channel
-
-  # # turn it into a variable for ease of use
-  x_ch = marker_coord[:,0]
-  y_ch = marker_coord[:,1]
-
-  # # check the effect of x and y channel as for loop changes
-  # # print('x_ch =',x_ch)
-  # # print('y_ch =',y_ch)
-
-  # # for testing purposes
- 
-  print('x =', x[0])
-  print('y =', x[1])
-
-  fc += 1
-  print('fc =',fc)
-
-  # use x y in the centroid
-
-  break
-
-  # # use region filtering
-  # # apply a filter to remove regions that have incorrect area characteristics.
-  # # skimage.measure has a very useful function called regionprops
-  # label_img = measure.label(seg_mask) 
-  # label_img_rgb = color.label2rgb(label_img, bg_label=0)
-  # regions = measure.regionprops(label_img)
-
-  # # dont have to filter, can sort. can get max
-  # # area_T = 1000
-  # region_ids = [props.label for props in regions.sort() if props.area > area_T] #this is very long i think
-  # # label_img_filtered = np.array([px if px in region_ids else 0 for px in label_img.ravel()])
-
-
-  # look for centriod of first frame
+    label_img = label(img_seg)
+    regions = regionprops(label_img)
+    sorted_regions = sorted(regions, key=lambda x: x.area, reverse=True)
+    marker_coord[i, :] = sorted_regions[0].centroid
 
 ##############################################################################
 #                             END OF YOUR CODE                               #
 ##############################################################################
 
-# fig, ax = plt.subplots()
+fig, ax = plt.subplots()
 
-# def frame(i):
-#     ax.clear()
-#     ax.axis('off')
-#     ax.plot(marker_coord[i, 1], marker_coord[i, 0], 'og')
-#     fig.tight_layout()
-#     plot=ax.imshow(video[i, :, :, :])
-#     return plot
+def frame(i):
+    ax.clear()
+    ax.axis('off')
+    ax.plot(marker_coord[i, 1], marker_coord[i, 0], 'og')
+    fig.tight_layout()
+    plot=ax.imshow(video[i, :, :, :])
+    return plot
 
-# anim = animation.FuncAnimation(fig, frame, frames=100)
-# plt.close()
-# anim
+anim = animation.FuncAnimation(fig, frame, frames=100)
+plt.show()
+plt.close()
+anim

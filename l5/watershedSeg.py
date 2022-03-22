@@ -22,7 +22,7 @@ and the flooding of basins from such markers separates the two circles along a w
 # The image is boolean, mimicking the result of a potential thresholding operation:
 
 from scipy import ndimage
-from skimage import io, segmentation, feature
+from skimage import segmentation, feature
 import matplotlib.pyplot as plt
 import numpy as np
 
