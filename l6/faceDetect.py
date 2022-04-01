@@ -51,41 +51,48 @@ plt.show()
 ##############################################################################
 # TODO: Automatically blur faces                                             #
 ##############################################################################
-# from skimage import filters
+from skimage import filters
 
-# for face in faces:
-#   filters.gaussian(face, sigma=10, multichannel=True)
+img_blurred = img_as_ubyte(filters.gaussian(img, sigma=13, multichannel=True))
+img_composite = img.copy()
 
-
-# img_composite = faces.copy()
-
+for face in faces:
+    img_composite[face[1]:face[1]+face[3], face[0]:face[0]+face[2], :] = \
+        img_blurred[face[1]:face[1]+face[3], face[0]:face[0]+face[2], :]
 
 ##############################################################################
 #                             END OF YOUR CODE                               #
 ##############################################################################
 
-# fig, ax = plt.subplots(figsize=(18, 12))
-# ax.imshow(img_composite), ax.set_axis_off()
-# fig.tight_layout
-# plt.show()
-
+fig, ax = plt.subplots(figsize=(18, 12))
+ax.imshow(img_composite), ax.set_axis_off()
+fig.tight_layout
+plt.show()
 
 
 ##############################################################################
 # TODO: Break the detector
 ##############################################################################
-pass
+from skimage import transform
+
+img = img_as_ubyte(transform.rescale(img, 0.25, multichannel=True, anti_aliasing=True))
+img_gray = color.rgb2gray(img)
+img_gray = img_as_ubyte(img_gray)         # Conversion required by OpenCV
+
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+faces = face_cascade.detectMultiScale(img_gray, 1.3, 5)
+
 ##############################################################################
 #                             END OF YOUR CODE                               #
 ##############################################################################
 
-# fig, ax = plt.subplots(figsize=(18, 12))
-# ax.imshow(img), ax.set_axis_off()
+fig, ax = plt.subplots(figsize=(18, 12))
+ax.imshow(img), ax.set_axis_off()
 
-# for face in faces:
-#     ax.add_patch(
-#         patches.Rectangle(xy=(face[0], face[1]), width=face[2], height=face[3],
-#                           fill=False, color='r', linewidth=2)
-#     )
-# fig.tight_layout
-# plt.show()
+for face in faces:
+    ax.add_patch(
+        patches.Rectangle(xy=(face[0], face[1]), width=face[2], height=face[3],
+                          fill=False, color='r', linewidth=2)
+    )
+fig.tight_layout
+plt.show()
